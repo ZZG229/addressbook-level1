@@ -106,10 +106,10 @@ public class AddressBook {
     private static final String COMMAND_ADD_EXAMPLE = COMMAND_ADD_WORD + " John Doe p/98765432 e/johnd@gmail.com";
 
     private static final String COMMAND_FIND_WORD = "find";
-    private static final String COMMAND_FIND_DESC = "Finds all persons whose names contain any of the specified "
+    private static final String COMMAND_FIND_DESC = "Finds all persons whose information contain any of the specified "
                                         + "keywords (case-sensitive) and displays them as a list with index numbers.";
     private static final String COMMAND_FIND_PARAMETERS = "KEYWORD [MORE_KEYWORDS]";
-    private static final String COMMAND_FIND_EXAMPLE = COMMAND_FIND_WORD + " alice bob charlie";
+    private static final String COMMAND_FIND_EXAMPLE = COMMAND_FIND_WORD + " alice bob charlie 1234567 johnd@gmail.com";
 
     private static final String COMMAND_LIST_WORD = "list";
     private static final String COMMAND_LIST_DESC = "Displays all persons as a list with index numbers.";
@@ -443,7 +443,7 @@ public class AddressBook {
     }
 
     /**
-     * Finds and lists all persons in address book whose name contains any of the argument keywords.
+     * Finds and lists all persons in address book whose information contains any of the argument keywords.
      * Keyword matching is case sensitive.
      *
      * @param commandArgs full command args string from the user
@@ -451,7 +451,7 @@ public class AddressBook {
      */
     private static String executeFindPersons(String commandArgs) {
         final Set<String> keywords = extractKeywordsFromFindPersonArgs(commandArgs);
-        final ArrayList<String[]> personsFound = getPersonsWithNameContainingAnyKeyword(keywords);
+        final ArrayList<String[]> personsFound = getPersonsWithInformationContainingAnyKeyword(keywords);
         showToUser(personsFound);
         return getMessageForPersonsDisplayedSummary(personsFound);
     }
@@ -477,15 +477,18 @@ public class AddressBook {
     }
 
     /**
-     * Retrieves all persons in the full model whose names contain some of the specified keywords.
+     * Retrieves all persons in the full model whose information contain some of the specified keywords.
      *
      * @param keywords for searching
-     * @return list of persons in full model with name containing some of the keywords
+     * @return list of persons in full model with information containing some of the keywords
      */
-    private static ArrayList<String[]> getPersonsWithNameContainingAnyKeyword(Collection<String> keywords) {
+    private static ArrayList<String[]> getPersonsWithInformationContainingAnyKeyword(Collection<String> keywords) {
         final ArrayList<String[]> matchedPersons = new ArrayList<>();
         for (String[] person : getAllPersonsInAddressBook()) {
-            final Set<String> wordsInName = new HashSet<>(splitByWhitespace(getNameFromPerson(person)));
+            //final Set<String> wordsInName = new HashSet<>(splitByWhitespace(getNameFromPerson(person)));
+            final Set<String> wordsInName = new HashSet<>(splitByWhitespace(getNameFromPerson(person)
+                    + " " + getEmailFromPerson(person)
+                    + " " + getPhoneFromPerson(person)));
             if (!Collections.disjoint(wordsInName, keywords)) {
                 matchedPersons.add(person);
             }
